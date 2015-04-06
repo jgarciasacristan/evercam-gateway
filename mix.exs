@@ -25,6 +25,9 @@ defmodule EvercamGateway.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    [{:porcelain, "~> 2.0"}]
+    [
+      {:porcelain, "~> 2.0"},
+      {:erlsom, git: "https://github.com/willemdj/erlsom"}
+    ]
   end
 end
