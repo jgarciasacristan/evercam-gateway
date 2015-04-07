@@ -22,17 +22,14 @@ defmodule Gateway.Discovery.Host do
     ports 
       |> Enum.filter(&(elem(&1,0)=='port'))
       |> Enum.map(&(get_port_data(&1)))
- end
+  end
 
+  # FIXME: same issues as parse_scan
   defp get_port_data(port) do
-    IO.inspect port
-    {'port',[{_,port_id},{_,_protocol}],[{_,_state,_},{_,service,_}]} = port
-    if Enum.count(service) == 4 do
-      [_,_,{'servicefp',service_footprint},{'name',service_name}] = service
-    else
-      [_,_,{'name',service_name}] = service
-    end
-    %{port_id: to_string(port_id), service_name: to_string(service_name), service_footprint: service_footprint} 
+    {'port',port_info,[{_,_state,_},{_,service_info,_}]} = port
+    port_info = Enum.into(port_info, %{})
+    service_info = Enum.into(service_info, %{})
+    Map.merge(port_info, service_info)
   end
 
 end
