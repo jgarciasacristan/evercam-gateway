@@ -27,7 +27,8 @@ defmodule EvercamGateway.Mixfile do
   defp deps do
     [
       {:porcelain, "~> 2.0"},
-      {:erlsom, git: "https://github.com/willemdj/erlsom"}
+      {:erlsom, git: "https://github.com/willemdj/erlsom"},
+      {:hexate,  ">= 0.5.0"}
     ]
   end
 end
