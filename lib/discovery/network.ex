@@ -41,7 +41,6 @@ defmodule Gateway.Discovery.Network do
   # Parse a specific interface. TODO: find a nicer way to replace elements.
   # TODO: Handle the Ipv6 addr which just happens to have the same bloody key-name
   defp parse_interface(interface) do
-    IO.inspect interface
     {interface_name, elements} = interface
     {to_string(interface_name), Enum.map(elements, fn(x) -> replace_key(elements, elem(x,0)) end) }
   end
