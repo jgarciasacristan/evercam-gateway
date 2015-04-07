@@ -10,7 +10,9 @@ defmodule Gateway.Discovery.Host do
       |> parse_scan
   end
 
-  # Parses XML output of Nmap - no JSON from nmap yet sadly
+  # Parses XML output of Nmap - no JSON from nmap yet sadly.
+  # FIXME: This is fragile and ugly. Replace either using customised
+  # SAX parser in erlsom, or create an XSL for Nmap XML to JSON
   defp parse_scan(xml) do
     scan_results = :erlsom.simple_form(xml)
     {:ok, {'nmaprun',_nmaprun,[_scaninfo,_verbosity,_debuglevel,
@@ -22,7 +24,8 @@ defmodule Gateway.Discovery.Host do
       |> Enum.map(&(get_port_data(&1)))
  end
 
-  def get_port_data(port) do
+  defp get_port_data(port) do
+    IO.inspect port
     {'port',[{_,port_id},{_,_protocol}],[{_,_state,_},{_,service,_}]} = port
     if Enum.count(service) == 4 do
       [_,_,{'servicefp',service_footprint},{'name',service_name}] = service
