@@ -1,7 +1,7 @@
 defmodule Gateway.Discover do
   alias Gateway.Discovery.Network
   alias Gateway.Discovery.Host
-  alias Gateway.Utilities.ParallelMap
+  alias Gateway.Utilities.Parallel
 
   @timeout 120000
 
@@ -32,7 +32,7 @@ defmodule Gateway.Discover do
   defp scan_hosts(hosts) do
     # Use a parallel map to run scans on every host concurrently. Add a two minute timeout 
     # for individual scans
-    ParallelMap.pmap(hosts, fn(x) -> { elem(x,0), elem(x,1), Host.scan(elem(x,0)) } end, @timeout)
+    Parallel.map(hosts, fn(x) -> { elem(x,0), elem(x,1), Host.scan(elem(x,0)) } end, @timeout)
   end
 
 end
