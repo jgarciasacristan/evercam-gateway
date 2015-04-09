@@ -16,14 +16,18 @@ defmodule Gateway.Discover do
   @doc "Experimental use only. Scan beyond interface subnets. This will potentially 
   identify hosts that cannot be routed to. It could take a very long time - think days." 
   def scan_deep do
-    ["", "192.0.0.0/24", "192.168.0.0/16", "169.254.0.0/16", "172.16.0.0/12"]
-      |> Enum.reduce(fn(x,acc) -> Network.scan_all(x) ++ acc end)
+    ["192.0.0.0/24", "192.168.0.0/16", "169.254.0.0/16", "172.16.0.0/12"]
+      |> Enum.reduce([],fn(x,acc) -> [Network.scan_all(x) | acc] end)
+      |> List.flatten
       |> scan_hosts
   end
 
-  @doc "Scans default IP addresses used by camera manufacturers. i.e. Hikvision: 192.0.0.64"
+  @doc "Scans default IP addresses used by camera manufacturers. i.e. Hikvision: 192.0.0.64. 
+  This may identify hosts that cannot be routed to."
   def scan_default do
-    Network.scan_all("192.0.0.64")
+    ["192.0.0.64", "192.168.0.90"]
+      |> Enum.reduce([],fn(x,acc) -> [Network.scan_all(x) | acc] end)
+      |> List.flatten
       |> scan_hosts
   end
 
