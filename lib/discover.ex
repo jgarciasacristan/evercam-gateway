@@ -7,8 +7,6 @@ defmodule Gateway.Discover do
 
   @doc "Returns a complete list of all network devices and associated data"
   def scan_basic do   
-    # Get a list of all network hosts across all interfaces
-    # format is [{ip,mac},{ip,mac},...]
     Network.scan_all()
       |> scan_hosts
   end

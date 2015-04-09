@@ -4,8 +4,7 @@ defmodule Gateway.Discovery.Network do
   @doc "Scan specified target network (i.e. 192.168.0.1-192.168.100.255) 
   on specified NIC. Default target is local network." 
   def scan(interface, target \\ "--localnet", arp_scan_options \\ "") do
-    command = "sudo arp-scan " <> arp_scan_options <> " --interface " <> 
-              interface <> " " <> target
+    command = "sudo arp-scan #{arp_scan_options} --interface=#{interface} #{target}"
     %Porcelain.Result{out: output, status: status} = Porcelain.shell(command)
     output 
       |> parse_scan
