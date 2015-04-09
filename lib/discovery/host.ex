@@ -15,10 +15,11 @@ defmodule Gateway.Discovery.Host do
   # SAX parser in erlsom, or create an XSL for Nmap XML to JSON
   defp parse_scan(xml) do
     scan_results = :erlsom.simple_form(xml)
+
     {:ok, {'nmaprun',_nmaprun,[_scaninfo,_verbosity,_debuglevel,
            {'host',_scantime,[_host_status,_host_address,_hostnames,
            {'ports',_,ports},_]},_runstats]},_} = scan_results
-    
+
     ports 
       |> Enum.filter(&(elem(&1,0)=='port'))
       |> Enum.map(&(get_port_data(&1)))
