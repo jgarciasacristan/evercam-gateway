@@ -1,10 +1,45 @@
 defmodule Gateway.Utilities.Network do
+  use Bitwise
 
   @doc "Turns an erlang ip_address() into a string"
-  def to_ipstring(addr) do
-    addr
+  def to_ipstring(address) do
+    address
       |> :inet.ntoa
       |> to_string
+  end
+
+  @doc "Turns a quad-dotted IPv4 string into an erlang ipaddress(), i.e. a 4-tuple."
+  def to_ipaddress(address) do
+    address
+      |> String.split(".")
+      |> Enum.map(fn(x) -> elem(Integer.parse(x),0) end)
+      |> List.to_tuple
+  end
+
+  @doc "Turns an erlang ip_address() to a 32 bit decimal integer"
+  def to_ipinteger(address) do
+    {octet1, octet2, octet3, octet4} = address
+    round((octet1*:math.pow(256,3)) + (octet2*:math.pow(256,2)) + (octet3*256) + octet4)
+  end
+
+  @doc "Determines if two IPv4 addresses with the same mask are on the same subnet.
+  Example usage: same_subnet?({192,168,1,1},{192,168,23,254},{255,255,255,0})"
+  def same_subnet?(ip_address1, ip_address2, mask) 
+    when is_tuple(ip_address1) and is_tuple(ip_address2) and is_tuple(mask) do 
+    
+    ip_decimal1 = to_ipinteger(ip_address1)
+    ip_decimal2 = to_ipinteger(ip_address2)
+    mask_decimal = to_ipinteger(mask)
+
+    (ip_decimal1 &&& mask_decimal) == (ip_decimal2 &&& mask_decimal)
+  end
+
+  @doc "Determines if two ip addresses with the same mask are on the same subnet.
+  Example usage: same_subnet?(\"192.168.1.1\",\"192.168.23.254\",\"255.255.255.0\")"
+  def same_subnet?(ip_address1, ip_address2, mask) 
+    when is_binary(ip_address1) and is_binary(ip_address2) and is_binary(mask) do 
+      
+    same_subnet?(to_ipaddress(ip_address1), to_ipaddress(ip_address2), to_ipaddress(mask))
   end
 
   @doc "Turns an erlang hwaddr (i.e. MAC) into a hex string with separator."
