@@ -17,6 +17,4 @@ defmodule Gateway.Routing.Rules do
     status
   end
 
-   
-
 end
