@@ -9,6 +9,7 @@ defmodule Gateway.Discovery.Network do
     %Porcelain.Result{out: output, status: status} = Porcelain.shell(command)
     output 
       |> parse_scan
+      |> Enum.uniq
       |> Enum.map(&(List.to_tuple(&1)))
   end
 
