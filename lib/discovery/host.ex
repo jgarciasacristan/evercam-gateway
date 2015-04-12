@@ -4,7 +4,7 @@ defmodule Gateway.Discovery.Host do
   @doc "Scans network host (i.e. 192.168.1.50) for ports and 
   identifies services on those ports"
   def scan(host) do 
-    command = "nmap -sV -oX - " <> host
+    command = "nmap -sV -oX - #{host}"
     %Porcelain.Result{out: output, status: status} = Porcelain.shell(command)
     output
       |> parse_scan
