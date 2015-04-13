@@ -17,7 +17,7 @@ defmodule Gateway.Discovery.Network do
   for each interface."
   def scan_all(target \\ "--localnet", arp_scan_options \\ "") do
     NetUtils.get_interfaces
-      |> Enum.map(&(to_string elem(&1,0)))
+      |> Enum.map(&(elem(&1,0)))
       |> Enum.map(&(scan(&1,target,arp_scan_options))) 
       |> List.flatten()
   end
