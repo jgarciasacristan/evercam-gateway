@@ -1,5 +1,5 @@
 defmodule Gateway.Utilities.ParallelTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias Gateway.Utilities.Parallel
 
   test "Elements are returned in sequence even when mapped function

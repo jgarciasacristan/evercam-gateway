@@ -71,6 +71,20 @@ defmodule Gateway.Utilities.Network do
   end
 
   @doc """
+  Determines if two IPv4 addresses with the same mask are on the same subnet
+  
+  ### Examples
+
+      iex> Network.same_subnet?({192,168,0,45},{192,168,0,85},{255,255,255,0})
+      true
+  """
+  def same_subnet?(ip_address1, ip_address2, netmask) 
+    when is_tuple(ip_address1) and is_tuple(ip_address2) and is_tuple(netmask) do 
+    (ip_address1 |> to_ipinteger &&& netmask |> to_ipinteger) 
+      == (ip_address2 |> to_ipinteger &&& netmask |> to_ipinteger)
+  end
+ 
+  @doc """
   Determines if two IPv4 addresses with the same mask are on the same subnet.
   
   ### Examples
@@ -103,21 +117,7 @@ defmodule Gateway.Utilities.Network do
     same_subnet?(ip_address |> to_ipaddress, network_ip_address |> to_ipaddress, 
        mask_decimal |> String.to_integer |> to_netmask)
   end
- 
-  @doc """
-  Determines if two IPv4 addresses with the same mask are on the same subnet
   
-  ### Examples
-
-      iex> Network.same_subnet?({192,168,0,45},{192,168,0,85},{255,255,255,0})
-      true
-  """
-  def same_subnet?(ip_address1, ip_address2, netmask) 
-    when is_tuple(ip_address1) and is_tuple(ip_address2) and is_tuple(netmask) do 
-    (ip_address1 |> to_ipinteger &&& netmask |> to_ipinteger) 
-      == (ip_address2 |> to_ipinteger &&& netmask |> to_ipinteger)
-  end
-
   @doc """
   Turns an erlang hwaddr (i.e. MAC) into a hex string with separator
   
@@ -144,6 +144,31 @@ defmodule Gateway.Utilities.Network do
   def parse_interfaces(interfaces) do
     interfaces 
       |> Enum.map(&(parse_interface(&1)))
+  end
+
+  @doc """
+  Gets the network interface through which a specific network device can be accessed
+  This should in theory always only return a single result unless you have a very
+  f%%ked-up network. In which case the device can't be routed to anyway.
+  """
+  def get_device_interface(device_ip_address) do
+    [interface] = get_interfaces
+      |> Enum.filter(fn(x) ->
+            interface_ip = get_interface_attribute(x,:addr)
+            interface_mask = get_interface_attribute(x,:netmask)
+            if (interface_ip && interface_mask != nil) do
+              same_subnet?(interface_ip,device_ip_address, interface_mask) 
+            else
+              false
+            end
+          end)
+      interface
+  end
+
+  @doc "Gets the IPv4 address of an interface"
+  def get_interface_attribute(interface, key) when is_tuple(interface) do
+    {_name,attributes} = interface
+    if Keyword.has_key?(attributes, key), do: Keyword.fetch!(attributes,key)
   end
 
   # Parse a specific interface to transform ipaddr and hwaddr to strings
