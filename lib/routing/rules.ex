@@ -3,9 +3,9 @@ defmodule Gateway.Routing.Rules do
   routing rules. These rules direct traffic from the Gateway to other LAN devices."
   alias Gateway.Routing.RulesServer
 
-  @doc "Starts the agent that holds state about existing rules. Clears all
-  existing user-generated iptables rules in the OS."
-  def start do
+  @doc "Clears all existing user-generated iptables rules in the OS. Starts the agent that 
+  holds state about existing rules. "
+  def start_link do
     flush_iptables
     RulesServer.start_link
   end
