@@ -5,9 +5,9 @@ defmodule Gateway.Routing.Rules do
 
   @doc "Clears all existing user-generated iptables rules in the OS. Starts the agent that 
   holds state about existing rules. "
-  def start_link do
+  def start_link(stash_pid) do
     flush_iptables
-    RulesServer.start_link
+    RulesServer.start_link(stash_pid)
   end
 
   @doc "Adds a forwarding rule. If rule already exists, it is ignored. If a different rule

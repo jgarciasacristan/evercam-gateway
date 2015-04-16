@@ -1,11 +1,12 @@
 defmodule Gateway.Routing.RulesServer do
   use GenServer
   @name __MODULE__
+  alias Gateway.Utilities.Stash
 
   ## Client API
   
-  def start_link do
-    GenServer.start_link(@name, :ok, name: @name)
+  def start_link(stash_pid) do
+    GenServer.start_link(@name, stash_pid, name: @name)
   end
 
   @doc "Stores a rule"
@@ -20,7 +21,7 @@ defmodule Gateway.Routing.RulesServer do
 
   @doc "Gets a rule or rules by key-value"
   def get({key,value}) do
-    GenServer.call(@name, {:get, {key,value} })
+    GenServer.call(@name, {:get, {key,value}})
   end  
  
   @doc "Gets all rules"
@@ -30,24 +31,29 @@ defmodule Gateway.Routing.RulesServer do
 
   ## Server Callbacks
 
-  def init(:ok) do
-    {:ok, []}
+  def init(stash_pid) do
+    {:ok, {Stash.retrieve(stash_pid), stash_pid}}
   end
 
-  def handle_call({:get, {key,value} }, _from, rules) do
-    {:reply, Enum.filter(rules, fn(x) -> x[key] == value end), rules}
+  def handle_call({:get, {key,value}}, _from, {rules, stash_pid}) do
+    1/value
+    {:reply, Enum.filter(rules, fn(x) -> x[key] == value end), {rules, stash_pid}}
   end
  
-  def handle_call({:get}, _from, rules) do
-    {:reply, rules, rules}
+  def handle_call({:get}, _from, {rules, stash_pid}) do
+    {:reply, rules, {rules, stash_pid}}
   end
 
-  def handle_cast({:add,rule},rules) do
-    {:noreply, [rule | rules]}
+  def handle_cast({:add,rule}, {rules, stash_pid}) do
+    {:noreply, {[rule | rules], stash_pid}}
   end
 
-  def handle_cast({:remove, rule}, rules) do
-    {:noreply, Enum.filter(rules, fn(x) -> x != rule end)}
+  def handle_cast({:remove, rule}, {rules, stash_pid}) do
+    {:noreply, {Enum.filter(rules, fn(x) -> x != rule end), stash_pid}}
+  end
+
+  def terminate(_reason, {rules, stash_pid}) do
+    Stash.stash(stash_pid, rules)
   end
 
 end
