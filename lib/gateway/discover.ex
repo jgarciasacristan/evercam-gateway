@@ -32,7 +32,7 @@ defmodule Gateway.Discover do
   defp scan_hosts(hosts) do
     # Use a parallel map to run scans on every host concurrently. Add a two minute timeout 
     # for individual scans
-    Parallel.map(hosts, fn(x) -> { elem(x,0), elem(x,1), Host.scan(elem(x,0)) } end, @timeout)
+    Parallel.map(hosts, @timeout, fn(x) -> { elem(x,0), elem(x,1), Host.scan(elem(x,0)) } end)
   end
 
 end

@@ -165,7 +165,23 @@ defmodule Gateway.Utilities.Network do
       interface
   end
 
-  @doc "Gets the IPv4 address of an interface"
+  @doc """
+  Gets an interface attribute (such as IPv4 address) from an interface
+  
+  Example: get_interface_attribute(interface, :addr)
+ 
+  The interface (originally from :inet.getifaddrs) will look something
+  like this:
+ 
+  {'wlan1',
+    [flags: [:up, :broadcast, :running, :multicast],
+    hwaddr: [16, 254, 237, 31, 86, 13], addr: {172, 16, 0, 184},
+    netmask: {255, 255, 255, 0}, broadaddr: {172, 16, 0, 255},
+    addr: {65152, 0, 0, 0, 4862, 60927, 65055, 22029},
+    netmask: {65535, 65535, 65535, 65535, 0, 0, 0, 0}]
+  }
+
+  """
   def get_interface_attribute(interface, key) when is_tuple(interface) do
     {_name,attributes} = interface
     if Keyword.has_key?(attributes, key), do: Keyword.fetch!(attributes,key)

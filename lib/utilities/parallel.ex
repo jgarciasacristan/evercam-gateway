@@ -5,7 +5,7 @@ defmodule Gateway.Utilities.Parallel do
   to protect it from the failure of the spawned processes. Also it returns
   an indicative tuple on failure. Finally I added a timeout parameter so it can be 
   called with varying levels of tolerance."
-  def map(collection, function, timeout) do
+  def map(collection, timeout \\ 1000, function) do
     me = self
     collection
       |> Enum.map(fn(elem) -> 

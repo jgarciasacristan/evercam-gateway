@@ -5,7 +5,7 @@ defmodule Gateway.Discovery.Host do
   identifies services on those ports"
   def scan(host) do 
     command = "nmap -sV -oX - #{host}"
-    %Porcelain.Result{out: output, status: status} = Porcelain.shell(command)
+    %Porcelain.Result{out: output, status: _status} = Porcelain.shell(command)
     output
       |> parse_scan
   end

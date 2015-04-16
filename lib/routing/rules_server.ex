@@ -36,7 +36,6 @@ defmodule Gateway.Routing.RulesServer do
   end
 
   def handle_call({:get, {key,value}}, _from, {rules, stash_pid}) do
-    1/value
     {:reply, Enum.filter(rules, fn(x) -> x[key] == value end), {rules, stash_pid}}
   end
  

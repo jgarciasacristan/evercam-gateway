@@ -7,7 +7,7 @@ defmodule Gateway.Utilities.ParallelTest do
     testfun = fn(x) -> :timer.sleep(100*x)
                         x * 2 
                         end   
-    assert [4,3,2,1] |> Parallel.map(testfun, 500) == [8,6,4,2]
+    assert [4,3,2,1] |> Parallel.map(500, testfun) == [8,6,4,2]
   end
 
   test "Mapped element is returned as an error tuple if process
@@ -15,7 +15,7 @@ defmodule Gateway.Utilities.ParallelTest do
     testfun = fn(x) -> :timer.sleep(100*x)
                         1 / x 
                         end   
-    assert [10,4,5,1,0] |> Parallel.map(testfun, 500) 
+    assert [10,4,5,1,0] |> Parallel.map(500, testfun) 
         == [{:error, :processfailed}, 0.25,0.2,1,{:error, :processfailed}]
   end 
 end

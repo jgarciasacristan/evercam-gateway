@@ -16,6 +16,11 @@ defmodule Gateway.Utilities.NetworkTest do
           addr: "FE80::12FE:EDFF:FE1F:560D", netmask: "FFFF:FFFF:FFFF:FFFF::"]}] 
   end
 
+  test "that interface attributes are retrieved correctly" do
+    [_,_,interface] = sample_interfaces
+    assert Network.get_interface_attribute(interface, :addr) == {172,16,0,184}
+  end
+
   defp sample_interfaces do
     [{'eth0',
       [flags: [:up, :broadcast, :running, :multicast],
