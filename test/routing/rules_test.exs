@@ -3,7 +3,7 @@ defmodule Gateway.Routing.RulesTest do
   alias Gateway.Routing.Rules
   alias Gateway.Routing.RulesServer  
 
-  @rule1 %{:gateway_port=>8080, :ip_address=>"172.16.0.21", :port=>80}
+  @rule1 %{:gateway_port=>8080, :ip_address=>"192.168.1.101", :port=>80}
   @rule2 %{:gateway_port=>9080, :ip_address=>"172.16.0.21", :port=>8021}
   @replacement_rule %{:gateway_port=>8080, :ip_address=>"172.16.0.44", :port=>554}
 
@@ -15,8 +15,7 @@ defmodule Gateway.Routing.RulesTest do
    end
 
   test "that test works", context do 
-    IO.inspect Rules.add(@rule1)
-    assert Rules.rules(8080) == [@rule1]
+    assert :ok == Rules.add(@rule1)
   end
 
 

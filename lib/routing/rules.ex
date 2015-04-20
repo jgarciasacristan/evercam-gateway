@@ -31,7 +31,11 @@ defmodule Gateway.Routing.Rules do
       # Only actually add it to the rules list if the addition in iptables was successful
       if status == 0 do
         RulesServer.add(rule)
+      else
+        {:error, "iptables failed to add rule"}
       end
+    else
+      {:error, "Rule already exists"}
     end
   end
 
@@ -49,17 +53,19 @@ defmodule Gateway.Routing.Rules do
   
     if status == 0 do
       RulesServer.remove(rule)
+    else
+      {:error, "iptables failed to remove rule"}
     end
   end
 
   @doc "Returns a list of rules with a specific :gateway_port - should always be list of 1, but you
   never know"
-  def rules(gateway_port) when is_integer(gateway_port) do
+  defp rules(gateway_port) when is_integer(gateway_port) do
     RulesServer.get({:gateway_port, gateway_port})
   end
 
   @doc "Returns the entire list of rules"
-  def rules do
+  defp rules do
     RulesServer.get()
   end
 
