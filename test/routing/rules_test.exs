@@ -2,7 +2,7 @@ defmodule Gateway.Routing.RulesTest do
   use ExUnit.Case, async: false
   alias Gateway.Routing.Rules
   alias Gateway.Routing.RulesServer  
-  @moduledoc "Tests the addition and removal of rules. Has to synchronous as it relies on OS state."
+  @moduledoc "Tests the addition and removal of rules. Has to be synchronous as it relies on OS state."
 
   setup_all do
     # Start RulesServer and Stash manually
