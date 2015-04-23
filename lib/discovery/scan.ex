@@ -1,8 +1,8 @@
-defmodule Gateway.Discover do
+defmodule Gateway.Discovery.Scan do
   alias Gateway.Discovery.Network
   alias Gateway.Discovery.Host
   alias Gateway.Utilities.Parallel
-
+ 
   @timeout 120000
 
   @doc "Returns a complete list of all network devices and associated data"
@@ -29,6 +29,14 @@ defmodule Gateway.Discover do
       |> scan_hosts
   end
 
+  def scan_test do
+  ["172.16.0.21"]
+      |> Enum.reduce([],fn(x,acc) -> [Network.scan_all(x) | acc] end)
+      |> List.flatten
+      |> scan_hosts
+
+  end
+
   defp scan_hosts(hosts) do
     # Use a parallel map to run scans on every host concurrently. Add a two minute timeout 
     # for individual scans
@@ -36,4 +44,3 @@ defmodule Gateway.Discover do
   end
 
 end
-

@@ -9,10 +9,17 @@ defmodule Gateway.Supervisor do
 
   def start_workers(sup) do
     # Start Stash for Rules
-    {:ok, stash} = Supervisor.start_child(sup, worker(Gateway.Utilities.Stash,[]))
+    {:ok, rules_stash} = Supervisor.start_child(sup, worker(Gateway.Utilities.Stash,[],id: :rules_stash))
 
     # Start Sub Supervisor for Rules
-    Supervisor.start_child(sup, supervisor(Gateway.RoutingSupervisor, [stash]))
+    Supervisor.start_child(sup, supervisor(Gateway.RoutingSupervisor, [rules_stash]))
+
+     # Start Stash for Discovery
+    {:ok, discovery_stash} = Supervisor.start_child(sup, worker(Gateway.Utilities.Stash,[], id: :discovery_stash))
+
+    # Start Sub Supervisor for Discovery
+    Supervisor.start_child(sup, supervisor(Gateway.DiscoverySupervisor, [discovery_stash]))
+
   end
 
   def init(_) do
