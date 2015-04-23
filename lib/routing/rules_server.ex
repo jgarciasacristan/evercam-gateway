@@ -9,24 +9,29 @@ defmodule Gateway.Routing.RulesServer do
     GenServer.start_link(@name, stash_pid, name: @name)
   end
 
-  @doc "Stores a rule"
+  @doc false
   def add(rule) when is_map(rule) do
     GenServer.cast(@name, {:add, rule})
   end
 
-  @doc "Removes a rule from storage"
+  @doc false
   def remove(rule) when is_map(rule) do
     GenServer.cast(@name, {:remove, rule})
   end
 
-  @doc "Gets a rule or rules by key-value"
+  @doc false
   def get({key,value}) do
     GenServer.call(@name, {:get, {key,value}})
   end  
  
-  @doc "Gets all rules"
+  @doc false
   def get do
     GenServer.call(@name, {:get})
+  end
+
+  @doc false
+  def clear do
+    GenServer.cast(@name, {:clear})
   end
 
   ## Server Callbacks
@@ -49,6 +54,10 @@ defmodule Gateway.Routing.RulesServer do
 
   def handle_cast({:remove, rule}, {rules, stash_pid}) do
     {:noreply, {Enum.filter(rules, fn(x) -> x != rule end), stash_pid}}
+  end
+
+  def handle_cast({:clear}, {rules, stash_pid}) do
+    {:noreply, {[], stash_pid}}
   end
 
   def terminate(_reason, {rules, stash_pid}) do

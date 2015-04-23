@@ -3,7 +3,7 @@ defmodule Gateway.Routing.Rules do
   routing rules. These rules direct traffic from the Gateway to other LAN devices."
   alias Gateway.Routing.RulesServer
 
-  @doc "Clears all existing user-generated iptables rules in the OS. Starts the agent that
+  @doc "Clears all existing user-generated iptables rules in the OS. Starts the genserver that
   stores the rules state"
   def start_link(stash_pid) do
     flush_iptables
@@ -58,13 +58,21 @@ defmodule Gateway.Routing.Rules do
     end
   end
 
-  @doc "Returns a list of rules with a specific :gateway_port - should always be list of 1, but you
-  never know"
+  @doc """
+    Clears all rules
+  """
+  def clear do
+    flush_iptables
+    RulesServer.clear
+  end
+
+  # Returns a list of rules with a specific :gateway_port - should always be list of 1, but you
+  # never know
   defp rules(gateway_port) when is_integer(gateway_port) do
     RulesServer.get({:gateway_port, gateway_port})
   end
 
-  @doc "Returns the entire list of rules"
+  # Returns the entire list of rules
   defp rules do
     RulesServer.get()
   end
