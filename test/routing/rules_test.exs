@@ -3,20 +3,35 @@ defmodule Gateway.Routing.RulesTest do
   alias Gateway.Routing.Rules
   alias Gateway.Routing.RulesServer  
 
-  @rule1 %{:gateway_port=>8080, :ip_address=>"192.168.1.101", :port=>80}
-  @rule2 %{:gateway_port=>9080, :ip_address=>"172.16.0.21", :port=>8021}
-  @replacement_rule %{:gateway_port=>8080, :ip_address=>"172.16.0.44", :port=>554}
-
-  # Start RulesServer and Stash so testing can extend to them if need be
   setup_all do
-    {:ok, stash_pid} = Gateway.Utilities.Stash.start_link
-    Gateway.Routing.Rules.start_link(stash_pid)
-    {:ok, stash: stash_pid}
-   end
-
-  test "that test works", context do 
-    assert :ok == Rules.add(@rule1)
+    # Start RulesServer and Stash manually
+    {:ok, stash_pid} = Gateway.Utilities.Stash.start_link 
+    Gateway.Routing.Rules.start_link(stash_pid) 
+    :ok
   end
 
+  test "Adding valid rule succeeds" do
+    assert :ok == Rules.add(%{:gateway_port=>8080,:ip_address=>test_ip,:port=>80})
+  end
+
+  # Generates an IP that will work with at least one active Network interface on local machine
+  # TODO: Discuss whether this is the right way to do this. Perhaps automation is not the answer.
+  defp test_ip do
+    alias Gateway.Utilities.Network, as: NetUtils
+    
+    NetUtils.get_interfaces
+      # Filter out interfaces that have no ip address
+      |> Enum.filter(fn(x) -> 
+           NetUtils.get_interface_attribute(x, :addr) != nil
+         end)
+      # grab the first one
+      |> Enum.at(0)
+      # Get the ip address as a 4-tuple
+      |> NetUtils.get_interface_attribute(:addr)
+      # Increment the last value in the tuple
+      |> (fn({oct1,oct2,oct3,oct4}) -> {oct1,oct2,oct3,oct4+1} end).()
+      # Turn the result into a string
+      |> NetUtils.to_ipstring
+  end
 
 end

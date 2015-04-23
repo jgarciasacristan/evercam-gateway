@@ -32,10 +32,10 @@ defmodule Gateway.Routing.Rules do
       if status == 0 do
         RulesServer.add(rule)
       else
-        {:error, "iptables failed to add rule"}
+        {:error, :eiptables}
       end
     else
-      {:error, "Rule already exists"}
+      {:error, :eexists}
     end
   end
 
@@ -54,7 +54,7 @@ defmodule Gateway.Routing.Rules do
     if status == 0 do
       RulesServer.remove(rule)
     else
-      {:error, "iptables failed to remove rule"}
+      {:error, :eiptables}
     end
   end
 
