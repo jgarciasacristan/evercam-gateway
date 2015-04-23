@@ -17,15 +17,8 @@ defmodule Gateway.Discovery do
 
   # Scans network and stores results in memory
   defp start do 
-    me = self
-    pid = spawn fn -> (
-        send me, { self, Scan.scan_basic }
-        ) end
-
-        receive do 
-          { ^pid, scan_results} ->
-            DiscoveryServer.put(scan_results)
-        end
+    Scan.scan_basic 
+      |> DiscoveryServer.put
   end
 
 end
