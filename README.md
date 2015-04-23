@@ -24,7 +24,7 @@ Take a LAN where the firewall allows only traffic out on ports 80 and 443 (we'll
 
 This process then is manual, or semi-manual, tedious, unreliable and insecure. Enter the Gateway.
 
-It connects to the API on port 443 (HTTPS) and to the VPN on port 80 (tunnelled). It automatically finds the 5 cameras and detects their configuration. It creates forwarding rules on its own local ports for the 5 cameras (10 ports in all usually, giving access to HTTP and RTSP on each device). These ports are the directly accessible over the VPN by the Evercam Platform which can securely injest and process media, as well as directly send commands and data to the cameras - again over an encrypted connection.
+It connects to the API on port 443 (HTTPS) and to the VPN on port 80 (tunnelled). It automatically finds the 5 cameras and detects their configuration. It creates forwarding rules on its own local ports for the 5 cameras (10 ports in all usually, giving access to HTTP and RTSP on each device). These ports are then directly accessible over the VPN by the Evercam Platform which can securely ingest and process media, as well as directly send commands and data to the cameras - again over an encrypted connection.
 
 The Gateway is automatic, reliable and secure.
 
@@ -47,5 +47,5 @@ It also relies on the [Softether VPN client](http://www.softether.org).
 *    *Small footprint*: with erlang (erlang-mini), we can achieve a very small distribution size. We want to be able to support minimal hardware.
 *    *Performance*: Erlang is fast
 *    *Flexibility*: hot swapping of code is considered to be a major future benefit
-*    *Maintainability*: creating a system of this complexity in C would be vastly too costly and too hard to maintain. Elixir has the features that we need to create maintable software
+*    *Maintainability*: creating a system of this complexity in C would be vastly too costly and too hard to maintain. Elixir has the features that we need to create maintainable software
 *    *The future*: given that we expect to have a large network of hardware devices in a highly distributed network, it makes sense to use a language that can support multi-node communications out of the box.
