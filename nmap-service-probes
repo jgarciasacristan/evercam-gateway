@@ -1,0 +1,15 @@
+################################################################
+##   THIS IS A CUSTOMISED EVERCAM.IO NMAP SERVICE PROBE FILE  ##
+##   IT IS DESIGNED TO BE BRIEF AND TO FOCUS ON IDENTIFYING   ##
+##   CAMERAS AND CAMERA RELATED SERVICES.                     ##
+##   Author: scandox@gmail.com                                ##
+################################################################
+
+#########################HTTP PROBES############################
+Probe TCP GetRequest q|GET / HTTP/1.0\r\n\r\n|
+rarity 1
+ports 80,554
+match http m/^HTTP/
+
+#########################RTSP PROBES############################
+
