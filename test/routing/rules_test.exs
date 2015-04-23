@@ -43,6 +43,19 @@ defmodule Gateway.Routing.RulesTest do
     assert {:error, :eiptables} == Rules.remove(%{:gateway_port=>8080,:ip_address=>test_ip,:port=>80})
   end
 
+  test "Adding a bunch of rules at once produces a list of failures and successes" do
+    assert [:ok, {:error, :eexists}, :ok] == Rules.add(rules_list)
+  end
+
+  # A list of sample rules
+  defp rules_list do
+    [
+      %{:gateway_port=>8080,:ip_address=>test_ip,:port=>80},
+      %{:gateway_port=>8080,:ip_address=>test_ip,:port=>80},
+      %{:gateway_port=>9080,:ip_address=>test_ip,:port=>8000}
+    ]
+  end
+
   # Generates an IP that will work with at least one active Network interface on local machine
   # TODO: Discuss whether this is the right way to do this. Perhaps automation is not the answer.
   defp test_ip do

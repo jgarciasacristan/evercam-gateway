@@ -11,6 +11,14 @@ defmodule Gateway.Routing.Rules do
   end
 
   @doc """
+    Adds multiple forwarding rules.
+  """
+  def add(rules) when is_list(rules) do
+    rules
+      |> Enum.map(fn(x) -> add(x) end)
+  end
+
+  @doc """
   Adds a forwarding rule. If rule already exists, it is ignored. If a different rule
   with the same :gateway_port exists then it will be removed automatically and replaced.
   
