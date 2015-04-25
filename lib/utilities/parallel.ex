@@ -12,7 +12,7 @@ defmodule Gateway.Utilities.Parallel do
           
           result_pid = spawn fn -> (
             receive do {pid, result} -> 
-              send me, {self, {result}}
+              send me, {self, result}
             after timeout ->
               send me, {self, {:error, :processfailed}}
             end)

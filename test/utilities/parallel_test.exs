@@ -15,7 +15,7 @@ defmodule Gateway.Utilities.ParallelTest do
     testfun = fn(x) -> :timer.sleep(100*x)
                         1 / x 
                         end   
-    assert [10,4,5,1,0] |> Parallel.map(500, testfun) 
-        == [{:error, :processfailed}, 0.25,0.2,1,{:error, :processfailed}]
+    assert [10,4,2,1,0] |> Parallel.map(500, testfun) 
+        == [{:error, :processfailed}, 0.25,0.5,1,{:error, :processfailed}]
   end 
 end
