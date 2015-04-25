@@ -17,7 +17,7 @@ defmodule Gateway.Discovery do
 
   # Scans network and stores results in memory
   defp start do 
-    Scan.scan_basic 
+    Scan.scan_test 
       |> DiscoveryServer.put
   end
 
