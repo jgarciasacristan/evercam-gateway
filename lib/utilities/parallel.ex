@@ -8,19 +8,28 @@ defmodule Gateway.Utilities.Parallel do
   def map(collection, timeout \\ 1000, function) do
     me = self
     collection
-      |> Enum.map(fn(elem) -> 
+      |> Enum.map(fn(elem) ->
+          
+          result_pid = spawn fn -> (
+            receive do {pid, result} -> 
+              send me, {self, {result}}
+            after timeout ->
+              send me, {self, {:error, :processfailed}}
+            end)
+          end
+
           spawn fn -> (
-            send me, {self, function.(elem)}) 
-          end 
+            send result_pid, {self, function.(elem)}) 
+          end
+
+          result_pid
+
         end)
       |> Enum.map(fn(pid) ->
           receive do {^pid, result} ->
             result
-          after timeout ->
-            {:error, :processfailed}      
           end
         end)
-
   end
     
 end
