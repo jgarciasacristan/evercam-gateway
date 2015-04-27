@@ -2,10 +2,10 @@ defmodule Gateway.Discovery.Host do
   @moduledoc "Scans individual hosts/devices using Nmap(1)"
 
   @doc "Scans network host (i.e. 192.168.1.50) for ports and 
-  identifies services on those ports. -p- scans every port. -sV is a service scan
+  identifies services on those ports. -p- scans every port (removed for now). -sV is a service scan
   -oX is to output XML."
   def scan(host) do 
-    command = "nmap -p- -sV -oX - #{host}"
+    command = "nmap -p1-10000 -sV -oX - #{host}"
     %Porcelain.Result{out: output, status: _status} = Porcelain.shell(command)
     output
       |> parse_scan
@@ -18,22 +18,29 @@ defmodule Gateway.Discovery.Host do
   # accurate.
   defp parse_scan(xml) do
     scan_results = :erlsom.simple_form(xml)
-
-    {:ok, {'nmaprun',_nmaprun,[_scaninfo,_verbosity,_debuglevel,
+      
+    case scan_results do 
+      {:ok, {'nmaprun',_nmaprun,[_scaninfo,_verbosity,_debuglevel,
            {'host',_scantime,[_host_status,_host_address,_hostnames,
-           {'ports',_,ports},_]},_runstats]},_} = scan_results
-
-    ports 
-      |> Enum.filter(&(elem(&1,0)=='port'))
-      |> Enum.map(&(get_port_data(&1)))
+           {'ports',_,ports},_]},_runstats]},_} ->
+        ports 
+          |> Enum.filter(&(elem(&1,0)=='port'))
+          |> Enum.map(&(get_port_data(&1)))
+      _->
+        {:error, :processfailed}
+      end
   end
 
   # FIXME: same issues as parse_scan
   defp get_port_data(port) do
-    {'port',port_info,[{_,_state,_},{_,service_info,_}]} = port
-    port_info = Enum.into(port_info, %{})
-    service_info = Enum.into(service_info, %{})
-    Map.merge(port_info, service_info)
+    case port do
+      {'port',port_info,[{_,_state,_},{_,service_info,_}]} ->
+        port_info = Enum.into(port_info, %{})
+        service_info = Enum.into(service_info, %{})
+        Map.merge(port_info, service_info)
+      _ ->
+        %{}
+    end
   end
 
 end
