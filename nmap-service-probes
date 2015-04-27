@@ -18,3 +18,10 @@ ports 80,554,3052,3372,5000,7070,8080,9021,10000
 fallback GetRequest
 match rtsp m|^RTSP/1\.0|
 
+########################HIKVISION RTSP PROBE####################
+#######CONTAINS DEFAULT MEDIA URI TO ENSURE RESPONSE#####################
+Probe TCP RTSPRequest q|OPTIONS /h264/ch1/main/av_stream RTSP/1.0\r\n\r\n|
+rarity 5
+ports 80,554,3052,3372,5000,7070,8080,9021,10000
+fallback GetRequest
+match rtsp m|^RTSP/1\.0|
