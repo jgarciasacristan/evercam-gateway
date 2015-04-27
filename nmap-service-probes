@@ -9,7 +9,12 @@
 Probe TCP GetRequest q|GET / HTTP/1.0\r\n\r\n|
 rarity 1
 ports 80,554
-match http m/^HTTP/
+match http m|^HTTP|
 
 #########################RTSP PROBES############################
+Probe TCP RTSPRequest q|OPTIONS / RTSP/1.0\r\n\r\n|
+rarity 5
+ports 80,554,3052,3372,5000,7070,8080,9021,10000
+fallback GetRequest
+match rtsp m|^RTSP/1\.0|
 
