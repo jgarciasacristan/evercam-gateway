@@ -1,4 +1,5 @@
 defmodule Gateway.Discovery.Host do
+  alias Gateway.Utilities.Map, as: MapUtils
   @moduledoc "Scans individual hosts/devices using Nmap(1)"
 
   @doc "Scans network host (i.e. 192.168.1.50) for ports and 
@@ -27,7 +28,7 @@ defmodule Gateway.Discovery.Host do
           |> Enum.filter(&(elem(&1,0)=='port'))
           |> Enum.map(&(get_port_data(&1)))
       _->
-        {:error, :processfailed}
+        {:error, :parsingfailed}
       end
   end
 
@@ -38,6 +39,7 @@ defmodule Gateway.Discovery.Host do
         port_info = Enum.into(port_info, %{})
         service_info = Enum.into(service_info, %{})
         Map.merge(port_info, service_info)
+          |> MapUtils.transform_keyvalue(fn(k,v) -> {to_string(k), to_string(v)} end)
       _ ->
         %{}
     end
