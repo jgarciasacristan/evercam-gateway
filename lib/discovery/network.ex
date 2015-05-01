@@ -10,7 +10,6 @@ defmodule Gateway.Discovery.Network do
     output 
       |> parse_scan
       |> Enum.uniq
-      |> Enum.map(&(List.to_tuple(&1)))
   end
 
   @doc "Scan all NICs for target network. Default is local network 
@@ -29,8 +28,12 @@ defmodule Gateway.Discovery.Network do
   end
 
   # Parse arp-scan results into an idiomatic format
-  defp parse_scan(results) do 
+  def parse_scan(results) do 
     Regex.scan(~r/(?<ip>(?:\d{1,3}\.){3}\d{1,3})\t(?<mac>(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2})/, results, capture: :all_names)
+      |> Enum.map(fn(x) -> 
+             [ ip | [ mac_address | tail]] = x
+             %{"ip" => ip, "mac_address" => mac_address}
+          end)
   end
 
 end
