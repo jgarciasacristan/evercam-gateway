@@ -2,6 +2,7 @@ defmodule Gateway.Routing.Rules do
   @moduledoc "Controls use of iptables(8) for dynamically adding and removing
   routing rules. These rules direct traffic from the Gateway to other LAN devices."
   alias Gateway.Routing.RulesServer
+  import Gateway.Utilities.External
 
   @doc "Clears all existing user-generated iptables rules in the OS. Starts the genserver that
   stores the rules state"
@@ -94,31 +95,31 @@ defmodule Gateway.Routing.Rules do
   # Initialise IP Tables
   defp flush_iptables do 
     # Flush all existing NAT rules
-    %Porcelain.Result{out: _output, status: _status} = Porcelain.shell("sudo iptables -t nat -F")
-    %Porcelain.Result{out: _output, status: _status} = Porcelain.shell("sudo iptables -X")
+    shell("sudo iptables -t nat -F")
+    shell("sudo iptables -X")
   end
 
   # Uses iptables to add a complete rule. A rule must have both a pre-route and a post-route 
   defp add(pre, post) do
-    %Porcelain.Result{out: _output, status: status} = Porcelain.shell("sudo iptables -t nat -A #{pre}") 
+    command = shell("sudo iptables -t nat -A #{pre}") 
     # prevent the post-route being added if pre-route failed. Otherwise buggy networking may ensue.
-    if status == 0 do
-      %Porcelain.Result{out: _output, status: status} = Porcelain.shell("sudo iptables -t nat -A #{post}") 
+    if command.status == 0 do
+      command = shell("sudo iptables -t nat -A #{post}") 
     end
-    status
+    command.status
   end
 
   # Uses iptables to remove an existing rule. It removes both the pre and post routes. 
   defp remove(pre,post) do
-     %Porcelain.Result{out: _output, status: status} = Porcelain.shell("sudo iptables -t nat -D #{pre}") 
+    command = shell("sudo iptables -t nat -D #{pre}") 
     # prevent the post-route being deleted if pre-route deletion failed. Otherwise buggy networking may ensue.
-    if status == 0 do
+    if command.status == 0 do
       # TODO: Figure out what to do if the interface IP changed between adding rule and removing it
       # This is really an edge case because rules are regenerated on reboot anyway. Still has to be
       # considered
-      %Porcelain.Result{out: _output, status: status} = Porcelain.shell("sudo iptables -t nat -D #{post}") 
+      command = shell("sudo iptables -t nat -D #{post}") 
     end
-    status
+    command.status
   end
 
   # Generates a pre-routing rule string

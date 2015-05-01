@@ -1,14 +1,14 @@
 defmodule Gateway.Discovery.Host do
   alias Gateway.Utilities.Map, as: MapUtils
+  import Gateway.Utilities.External
   @moduledoc "Scans individual hosts/devices using Nmap(1)"
 
   @doc "Scans network host (i.e. 192.168.1.50) for ports and 
   identifies services on those ports. -p- scans every port (removed for now). -sV is a service scan
   -oX is to output XML."
   def scan(host) do 
-    command = "nmap -p1-10000 -sV -oX - #{host}"
-    %Porcelain.Result{out: output, status: _status} = Porcelain.shell(command)
-    output
+    command = shell("nmap -p1-10000 -sV -oX - #{host}")
+    command.out
       |> parse_scan
   end
 

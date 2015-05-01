@@ -1,13 +1,13 @@
 defmodule Gateway.Discovery.Network do
   @moduledoc "Scans LAN for devices, using arp-scan(1)"
   alias Gateway.Utilities.Network, as: NetUtils
+  import Gateway.Utilities.External
 
   @doc "Scan specified target network (i.e. 192.168.0.1-192.168.100.255) 
   on specified NIC. Default target is local network." 
   def scan(interface, target \\ "--localnet", arp_scan_options \\ "") do
-    command = "sudo arp-scan #{arp_scan_options} --interface=#{interface} #{target}"
-    %Porcelain.Result{out: output, status: status} = Porcelain.shell(command)
-    output 
+    command = shell("sudo arp-scan #{arp_scan_options} --interface=#{interface} #{target}")
+    command.out 
       |> parse_scan
       |> Enum.uniq
   end

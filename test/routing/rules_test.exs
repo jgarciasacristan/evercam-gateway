@@ -1,7 +1,6 @@
 defmodule Gateway.Routing.RulesTest do
   use ExUnit.Case, async: false
   alias Gateway.Routing.Rules
-  alias Gateway.Routing.RulesServer  
   @moduledoc "Tests the addition and removal of rules. Has to be synchronous as it relies on OS state."
 
   setup_all do
@@ -74,14 +73,6 @@ defmodule Gateway.Routing.RulesTest do
       |> (fn({oct1,oct2,oct3,oct4}) -> {oct1,oct2,oct3,oct4+1} end).()
       # Turn the result into a string
       |> NetUtils.to_ipstring
-  end
-
-  # TODO: Discuss. This is a copy of a private function from Rules. Is there a better way?
-  # Should I even be testing these external utilities in this way?
-  defp flush_iptables do 
-    # Flush all existing NAT rules
-    %Porcelain.Result{out: _output, status: _status} = Porcelain.shell("sudo iptables -t nat -F")
-    %Porcelain.Result{out: _output, status: _status} = Porcelain.shell("sudo iptables -X")
   end
 
 end
