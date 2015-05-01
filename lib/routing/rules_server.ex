@@ -56,7 +56,7 @@ defmodule Gateway.Routing.RulesServer do
     {:noreply, {Enum.filter(rules, fn(x) -> x != rule end), stash_pid}}
   end
 
-  def handle_cast({:clear}, {rules, stash_pid}) do
+  def handle_cast({:clear}, {_rules, stash_pid}) do
     {:noreply, {[], stash_pid}}
   end
 

@@ -24,7 +24,7 @@ defmodule Gateway.Utilities.Stash do
     {:reply, current_value, current_value}
   end
 
-  def handle_cast({:stash, value}, current_value) do
+  def handle_cast({:stash, value}, _current_value) do
     {:noreply, value}
   end
 
