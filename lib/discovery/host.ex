@@ -2,6 +2,7 @@ defmodule Gateway.Discovery.Host do
   alias Gateway.Utilities.Map, as: MapUtils
   import Gateway.Utilities.External
   @moduledoc "Scans individual hosts/devices using Nmap(1)"
+  @key_mappings %{"conf" => "confidence", "name" => "service", "portid" => "port_id", "servicefp"=>"service_footprint"}
 
   @doc "Scans network host (i.e. 192.168.1.50) for ports and 
   identifies services on those ports. -p- scans every port (removed for now). -sV is a service scan
@@ -39,7 +40,16 @@ defmodule Gateway.Discovery.Host do
         port_info = Enum.into(port_info, %{})
         service_info = Enum.into(service_info, %{})
         Map.merge(port_info, service_info)
+          # Transform all keys and values to binaries (they all come in as char lists etc)
           |> MapUtils.transform_keyvalue(fn(k,v) -> {to_string(k), to_string(v)} end)
+          # Transform nmap key names to desired key names according to mapping list
+          |> MapUtils.transform_keyvalue(fn(k,v) -> 
+                    if Map.has_key?(@key_mappings,k) do
+                      {@key_mappings[k], v}
+                    else
+                      {k,v}
+                    end
+                end)
       _ ->
         %{}
     end

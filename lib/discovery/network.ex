@@ -31,8 +31,8 @@ defmodule Gateway.Discovery.Network do
   def parse_scan(results) do 
     Regex.scan(~r/(?<ip>(?:\d{1,3}\.){3}\d{1,3})\t(?<mac>(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2})/, results, capture: :all_names)
       |> Enum.map(fn(x) -> 
-             [ ip | [ mac_address | tail]] = x
-             %{"ip" => ip, "mac_address" => mac_address}
+             [ ip | [ mac | _tail]] = x
+             %{"ip_address" => ip, "mac_address" => mac}
           end)
   end
 
