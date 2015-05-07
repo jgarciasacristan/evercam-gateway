@@ -2,7 +2,7 @@ defmodule Gateway.Utilities.Network do
   use Bitwise
 
   @doc """
-  Turns an erlang-style IPv4 address into a string
+  Turns an erlang-style IPv4 or IPv6 address into a string
   
   ### Examples
 
@@ -140,7 +140,9 @@ defmodule Gateway.Utilities.Network do
       |> Enum.filter(&(elem(&1,0) != 'lo'))    
   end
 
-  @doc "Parses network interface data, transforming IP addresses and MAC Addresses to string representations"
+  @doc "Parses network interface data, transforming IP addresses and MAC Addresses to 
+  string representations. This is most suitable for preparing to send network data
+  as JSON or other external representation."
   def parse_interfaces(interfaces) do
     interfaces 
       |> Enum.map(&(parse_interface(&1)))
@@ -191,28 +193,46 @@ defmodule Gateway.Utilities.Network do
   # Interface elements are a keyword list which usually contains some duplicate keywords
   defp parse_interface(interface) do
     {interface_name, elements} = interface
-    {to_string(interface_name), Keyword.keys(elements)
-      |> Enum.reduce(elements, 
-        fn(x,acc) ->
-          {value, list} = Keyword.pop_first(acc,x)
-          [ list | [{x, replace_key_value(value, x)}]]
+    Keyword.keys(elements)
+      # Reformat selected values according to their keys
+      |> Enum.reduce(elements, fn(x,acc) ->
+            {value, list} = Keyword.pop_first(acc,x)
+            [ list | [replace_key_value(x, value)]]
             |> List.flatten
-        end)}
+          end)
+      # Put it into a Map
+      |> Enum.into(%{})
+      # Add the interface name as a key/value 
+      |> Map.put_new("name", to_string(interface_name))
   end
 
   # Implements the conversion based on key name
-  defp replace_key_value(value, key) do
+  defp replace_key_value(key, value) do
     case key do
       :addr ->
-        to_ipstring(value)
+        case value do
+          {_octet1,_,_,_} ->
+            {"ip_address", to_ipstring(value)}
+          {_double_octet1, _, _, _, _, _, _, _} ->
+            {"ipv6_address", to_ipstring(value)}
+          _->
+            {"ip_address", "error"}
+        end
       :netmask ->
-        to_ipstring(value)
+         case value do
+           {_octet1,_,_,_} ->
+             {"net_mask", to_ipstring(value)}
+          {_double_octet1, _, _, _, _, _, _, _} ->
+            {"ipv6_net_mask", to_ipstring(value)}
+          _->
+            {"net_mask", "error"}
+         end
       :broadaddr ->
-        to_ipstring(value)
+        {"broadcast_address", to_ipstring(value)}
       :hwaddr ->
-        to_macstring(value)
+        {"mac_address", to_macstring(value)}
       _->
-        value
+        {key, value}
     end
   end
 
