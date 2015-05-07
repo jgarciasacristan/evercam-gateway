@@ -29,7 +29,7 @@ defmodule EvercamGateway.Mixfile do
       {:porcelain, "~> 2.0"},
       {:erlsom, git: "https://github.com/willemdj/erlsom"},
       {:hexate,  ">= 0.5.0"},
-      {:exjsx, ">= 3.1.0"}
+      {:poison, ">= 1.4.0"}
     ]
   end
 end
