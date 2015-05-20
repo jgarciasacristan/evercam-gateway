@@ -1,4 +1,4 @@
-defmodule EvercamGatewayTest do
+defmodule GatewayTest do
   use ExUnit.Case
 
   test "the truth" do
